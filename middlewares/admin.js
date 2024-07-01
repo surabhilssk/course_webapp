@@ -1,18 +1,18 @@
+const jwt = require("jsonwebtoken");
 const { Admin } = require("../db");
+const { JWT_SECRET } = require("../secrets/secret");
 
 
 async function adminMiddleware(req, res, next){
-    const username = req.headers.username;
-    const password = req.headers.password;
-    const value = await Admin.findOne({
-        username: username,
-        password: password
-    });
-    if(value){
+    const token = req.headers.authorization;
+    const words = token.split(" ");
+    const jwtToken = words[1];
+    const decodedValue = jwt.verify(jwtToken, JWT_SECRET);
+    if(decodedValue.username){
         next();
     }else{
-        res.status(403).json({
-            msg: "Admin Not Found",
+        json.status(403).json({
+            message: "You're not authenticated"
         })
     }
 }

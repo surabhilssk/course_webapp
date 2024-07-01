@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const key = require("../secrets/secret");
+const { newKey } = require("../secrets/secret");
 
-mongoose.connect(key);
+mongoose.connect(newKey);
 
 //defining schema for admin
 const AdminSchema = new mongoose.Schema({

@@ -1,6 +1,8 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const adminMiddleware = require("../middlewares/admin");
 const { Admin, Course } = require("../db");
+const { JWT_SECRET } = require("../secrets/secret");
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
@@ -30,6 +32,31 @@ router.post('/signup', async (req, res) => {
         }
     }
 });
+
+router.post('/signin',async (req, res)=>{
+    const username = req.body.username;
+    const password = req.body.password;
+    const value = await Admin.findOne({
+        username: username,
+        password: password
+    })
+    if(value){
+        try{
+            const token = jwt.sign({username},JWT_SECRET);
+            res.json({
+                token: token
+            })
+        }catch{
+            json.status(402).json({
+                message: "Error occured while creating token"
+            })
+        } 
+    }else{
+        res.status(403).json({
+            message: "Incorrect username or password"
+        })
+    }
+})
 
 router.post('/courses', adminMiddleware, async (req, res) => {
     const title = req.body.title;
